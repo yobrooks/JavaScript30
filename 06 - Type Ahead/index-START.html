@@ -1,22 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Type Ahead 👀</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Type Ahead 👀</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <form class="search-form">
+      <input type="text" class="search" placeholder="City or State" />
+      <ul class="suggestions">
+        <li>Filter for a city</li>
+        <li>or a state</li>
+      </ul>
+    </form>
+    <script>
+      const endpoint =
+        "https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json";
 
-  <form class="search-form">
-    <input type="text" class="search" placeholder="City or State">
-    <ul class="suggestions">
-      <li>Filter for a city</li>
-      <li>or a state</li>
-    </ul>
-  </form>
-<script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+      const cities = [];
 
-</script>
-</body>
+      //fetch -> API in browser; returns a promise
+      //call .then on a promise that will return a blob of data
+      //data that comes back from fetch doesn't know what type of data it is yet
+      //blob has to be converted from raw data that it is in to JSON
+      //calling blob.json() will return another promise which will then get you the data
+      fetch(endpoint)
+        .then((blob) => blob.json())
+        .then((data) => cities.push(...data));
+      //use spread operator in the push to push every individual item in data into the cities array
+      //else it'll push the entire data array, which will cause cities to be a nested array
+
+      //figure out if city or state matches what was searched
+      function findMatches(wordToMatch, cities) {
+        return cities.filter((place) => {
+          //create a new regular expression that will hold the word you're searching for
+          //g is global meaning it will look thru entire string
+          //i means it will be case insensitive
+          const regex = new RegExp(wordToMatch, "gi");
+          return place.city.match(regex) || place.state.match(regex);
+        });
+      }
+
+      //turns the population numbers into a string that has commas
+      function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      }
+
+      function displayMatches() {
+        //get the matches of the searched word
+        const matchArray = findMatches(this.value, cities);
+        //generate the html to display the matches
+        const html = matchArray
+          .map((place) => {
+            //find whatever the value being searched for matched
+            //replace the city name of what was matched with a highlighed html version
+            //.replace() returns a string, so the actual city name in the object isn't being replaced
+            const regex = new RegExp(this.value, "gi");
+            const cityName = place.city.replace(
+              regex,
+              `<span class="hl">${this.value}</span>`
+            );
+            const stateName = place.state.replace(
+              regex,
+              `<span class="hl">${this.value}</span>`
+            );
+            //the cityName and stateName variables are strings that hold html
+            return `<li>
+            <span class="name">${cityName}, ${stateName}</span>
+            <span class="population">${numberWithCommas(
+              place.population
+            )}</span>
+            </li>`;
+          })
+          .join(""); //call join() to turn array returned by map() into a single string
+        suggestions.innerHTML = html;
+      }
+
+      const searchInput = document.querySelector(".search");
+      const suggestions = document.querySelector(".suggestions");
+
+      //change event only fires when you go off the input
+      searchInput.addEventListener("change", displayMatches);
+      searchInput.addEventListener("keyup", displayMatches);
+    </script>
+  </body>
 </html>

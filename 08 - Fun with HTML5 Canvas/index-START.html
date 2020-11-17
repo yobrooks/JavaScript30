@@ -1,19 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>HTML5 Canvas</title>
-</head>
-<body>
-<canvas id="draw" width="800" height="800"></canvas>
-<script>
-</script>
+  <head>
+    <meta charset="UTF-8" />
+    <title>HTML5 Canvas</title>
+  </head>
+  <body>
+    <canvas id="draw" width="800" height="800"></canvas>
+    <script>
+      const canvas = document.querySelector("#draw");
+      //canvas gives you a block of pixels and then you draw on that
+      //don't draw on the actual canvas element in HTML
+      //use a context (either 2D or 3D)
+      const ctx = canvas.getContext("2d");
 
-<style>
-  html, body {
-    margin: 0;
-  }
-</style>
+      //resize canvas to size of window
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
 
-</body>
+      //set context settings for when you draw
+      //set color and determine how it should look at end of line or when it meets another line
+      ctx.strokeStyle = "#BADA55";
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.lineWidth = 20;
+
+      //flag that changes when you click down or let up
+      //tells whether to actually draw to canvas
+      let isDrawing = false;
+      //where to start and where end of line is drawn
+      let lastX = 0;
+      let lastY = 0;
+      let hue = 0; //color you're drawing in
+      let direction = true;
+
+      function draw(e) {
+        if (!isDrawing) return; //stop function from running when not mouse down
+        console.log(hue);
+        //update the context's color and line width
+        ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+        //setup to start line
+        ctx.beginPath();
+        // start from
+        ctx.moveTo(lastX, lastY);
+        //go to
+        ctx.lineTo(e.offsetX, e.offsetY);
+        //actually draw something
+        ctx.stroke();
+        //update previous values
+        lastX = e.offsetX;
+        lastY = e.offsetY;
+        hue++; //update the color hue so it'll go thru entire spectrum
+        if (hue >= 360) hue = 0;
+
+        //line width will stay between 1 and 100
+        //once it reaches its boundary values, it will flip direction
+        //direction here is whether to increment or decrement
+        if (ctx.lineWidth >= 100 || ctx.lineWidth <= 1) {
+          direction = !direction;
+        }
+        if (direction) {
+          ctx.lineWidth++;
+        } else {
+          ctx.lineWidth--;
+        }
+      }
+
+      canvas.addEventListener("mousemove", draw);
+      //if mouse is down set flag to true
+      canvas.addEventListener("mousedown", (e) => {
+        isDrawing = true;
+        //same as updating values in draw function; just using array destructuring
+        //update these so that as soon as the mouse clicks down to start line
+        //before mouse moves it can start from where you moused down
+        [lastX, lastY] = [e.offsetX, e.offsetY];
+      });
+      //if mouse has been let up (not clicked down anymore), set flag to false
+      canvas.addEventListener("mouseup", () => (isDrawing = false));
+      //if the mouse leaves the canvas window, set flag to false
+      canvas.addEventListener("mouseout", () => (isDrawing = false));
+    </script>
+
+    <style>
+      html,
+      body {
+        margin: 0;
+      }
+    </style>
+  </body>
 </html>

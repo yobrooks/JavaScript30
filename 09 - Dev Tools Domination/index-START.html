@@ -1,46 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Console Tricks!</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Console Tricks!</title>
+  </head>
+  <body>
+    <p onClick="makeGreen()">×BREAK×DOWN×</p>
 
-  <p onClick="makeGreen()">×BREAK×DOWN×</p>
+    <script>
+      const dogs = [
+        { name: "Snickers", age: 2 },
+        { name: "hugo", age: 8 },
+      ];
 
-  <script>
-    const dogs = [{ name: 'Snickers', age: 2 }, { name: 'hugo', age: 8 }];
+      function makeGreen() {
+        const p = document.querySelector("p");
+        p.style.color = "#BADA55";
+        p.style.fontSize = "50px";
+      }
 
-    function makeGreen() {
-      const p = document.querySelector('p');
-      p.style.color = '#BADA55';
-      p.style.fontSize = '50px';
-    }
-
-    // Regular
-
-    // Interpolated
-
-    // Styled
-
-    // warning!
-
-    // Error :|
-
-    // Info
-
-    // Testing
-
-    // clearing
-
-    // Viewing DOM Elements
-
-    // Grouping together
-
-    // counting
-
-    // timing
-
-  </script>
-</body>
+      // Regular
+      console.log("hello");
+      // Interpolated --> use %s and whatever you pass as the next strings
+      //will replace %s to make one full string; kinda used like ES6 string liteals
+      //Output: Hello I am a new string! Yay
+      console.log("Hello I am a %s string! %s", "new", "Yay");
+      // Styled --> way to style output with %c
+      //console.log("%c I am some great text", "font-size:50px");
+      // warning! --> gives warning with specified text;
+      //also will tell stack trace of where it was called
+      console.warn("Oh no");
+      // Error :| --> same as warning but gives error
+      console.error("OH NO");
+      // Info
+      console.info("Fun Fact");
+      // Testing --> assert will only fire if something is wrong
+      //checks validity of statement entered and if it's false then it will wrong second statement
+      console.assert(1 === 2, "That is wrong!");
+      // clearing
+      console.clear();
+      // Viewing DOM Elements
+      const p = document.querySelector("p");
+      console.dir(p);
+      console.clear();
+      // Grouping together
+      dogs.forEach((dog) => {
+        console.groupCollapsed(`${dog.name}`);
+        console.log(`This is ${dog.name}`);
+        console.log(`${dog.name} is ${dog.age} years old`);
+        console.log(`${dog.name} is ${dog.age * 7} years old in dog years`);
+        console.groupEnd(`${dog.name}`);
+      });
+      // counting
+      console.count("Yasmine");
+      console.count("Yasmine");
+      console.count("Yasmine");
+      console.count("Yasmine");
+      // timing
+      //SEE FINISHED FILE
+    </script>
+  </body>
 </html>
